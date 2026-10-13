@@ -1,0 +1,37 @@
+# geoscan default settings. Any key omitted here uses the default in geoscan/config.py.
+
+grid:
+  base_res_m: 30          # terrain / lineaments
+  emit_factor: 2          # EMIT at 60 m (native)
+  aster_factor: 3         # ASTER GED at 90 m (native 100 m)
+  align_m: 180
+  structure_pad_m: 1500
+
+acquire:
+  ee_project: animated-sign-467711-n9
+  start_date: "2022-08-01"
+  end_date: null          # null = today
+  min_aoi_coverage: 0.05
+
+spectral:
+  mc_draws: 64
+  detect_sigma: 2.0
+  min_depth: 0.01
+  ndvi_max: 0.30
+  min_albedo: 0.04
+
+l2b:
+  group2_min_fit: 0.30
+  group2_max_unc: 0.025
+  group1_min_fit: 0.25
+  group1_max_unc: 0.020
+
+structure:
+  n_azimuths: 8
+  sun_elevation_deg: 30
+  min_segment_m: 450
+  max_gap_m: 90
+  min_length_m: 800
+  density_radius_m: 1000
+  dem_source: aw3d30      # ALOS AW3D30 v4.1 (tested 2026-10-07: better than SRTM at both blocks)
+  canny_tile_m: 3000      # edge thresholds per 3 km tile so flat ground is not out-competed

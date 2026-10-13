@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OreSight Copper Prospectivity</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">◆</span> OreSight <span class="sub">Copper prospectivity from satellite data</span></div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="map" class="active">Map</button>
+    <button data-tab="contours">Contour maps</button>
+    <button data-tab="targets">Zones</button>
+    <button data-tab="validation">Validation</button>
+    <button data-tab="download">Download</button>
+    <button data-tab="guide">Guide</button>
+    <button data-tab="admin" id="admin-tab-btn" hidden>Admin</button>
+  </nav>
+  <div id="whoami" class="whoami" hidden></div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+   <div class="side-scroll">
+    <section class="card">
+      <h2>Area</h2>
+      <select id="block-select"></select>
+      <div id="block-info" class="muted small"></div>
+      <button id="new-area-btn" class="btn ghost full">＋ Upload a new area (KML / KMZ / GeoJSON)</button>
+    </section>
+
+    <section class="card">
+      <h2>Method options</h2>
+      <div id="options"></div>
+      <div class="muted small">★ = recommended (tested best on both blocks)</div>
+      <div id="run-status" class="status"></div>
+      <div id="computed" class="computed"></div>
+    </section>
+
+    <section class="card">
+      <details id="params-box">
+        <summary><h2 class="inline">Adjust parameters</h2> <span id="params-changed" class="badge" hidden></span></summary>
+        <p class="muted small">Values the method chose by hand. Tags: <b>EXP</b> expert choice, <b>ASM</b> project assumption,
+          <b>LIB</b> spectral library. Change any value, then press <i>Run analysis</i> in the bar at the bottom; only the affected steps are recomputed.</p>
+        <div id="params"></div>
+        <button type="button" id="params-reset" class="btn ghost full">Reset all to defaults</button>
+      </details>
+    </section>
+
+   </div>
+
+   <div class="side-footer">
+    <section id="job-card" class="footer-block" hidden>
+      <h2>Analysis in progress</h2>
+      <div id="job-title" class="small"></div>
+      <div class="bar"><div id="job-bar"></div></div>
+      <div id="job-step" class="small"></div>
+      <details><summary class="small">Log</summary><pre id="job-log"></pre></details>
+    </section>
+    <div id="run-bar" class="footer-block run-bar" hidden>
+      <div id="run-bar-text" class="small"></div>
+      <div class="run-bar-actions">
+        <button id="run-discard" class="btn ghost" type="button" title="Go back to the results you were viewing">Discard changes</button>
+        <button id="run-btn" class="btn primary">Run analysis</button>
+      </div>
+    </div>
+   </div>
+  </aside>
+
+  <main class="content">
+    <section class="tab-panel active" id="tab-map">
+      <div id="map"></div>
+      <div class="map-panel" id="map-panel">
+        <h3>Layer</h3>
+        <div id="layer-radios"></div>
+        <label class="slider">Opacity <input type="range" id="opacity" min="0" max="1" step="0.05" value="0.8"></label>
+        <h3>Show</h3>
+        <label><input type="checkbox" id="show-contours" checked> Contour lines</label>
+        <label><input type="checkbox" id="show-zones" checked> Prospective zones</label>
+        <label><input type="checkbox" id="show-targets" checked> Field-check locations</label>
+        <label><input type="checkbox" id="show-lineaments" checked> Lineaments</label>
+        <label><input type="checkbox" id="show-na" checked> Not assessed (no usable EMIT data)</label>
+        <h3>Base map</h3>
+        <label><input type="radio" name="base" value="sat" checked> Satellite</label>
+        <label><input type="radio" name="base" value="topo"> Topographic</label>
+      </div>
+      <div class="map-notice" id="map-notice" hidden></div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="tab-panel" id="tab-contours">
+      <p class="muted">Publication-style contour maps for the selected area and method options. Click a map to enlarge.</p>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <section class="tab-panel" id="tab-targets">
+      <h2 class="tab-h">Prospective zones</h2>
+      <p class="muted">The main result: ranked regions where the evidence is strongest. The method predicts regions, not exact
+        points. Click a row to show the zone on the map.</p>
+      <div id="zones-note" class="empty" hidden>These results were made before zones were introduced. Run the analysis again to get zones.</div>
+      <div class="table-wrap"><table id="zones-table"></table></div>
+      <h2 class="tab-h">Suggested field-check locations</h2>
+      <p class="muted">Starting points for field work inside the zones (highest CPI, at least 250 m apart). Their exact
+        position is not significant; they are not drill collars. Click a row to show it on the map.</p>
+      <div class="table-wrap"><table id="targets-table"></table></div>
+    </section>
+
+    <section class="tab-panel" id="tab-validation">
+      <div id="validation"></div>
+    </section>
+
+    <section class="tab-panel" id="tab-download">
+      <div class="download-head">
+        <div>
+          <h2>Download results</h2>
+          <p class="muted small">Rasters, Shapefiles and GeoPackages are in the area's UTM zone; GeoJSON is in WGS84.</p>
+        </div>
+        <div class="formats" id="formats"></div>
+        <button id="download-btn" class="btn primary">Download selected (.zip)</button>
+      </div>
+      <div id="download-groups" class="download-groups"></div>
+    </section>
+
+    <section class="tab-panel" id="tab-admin"></section>
+
+    <section class="tab-panel" id="tab-guide">
+      <article class="guide">
+        <h1>How OreSight works</h1>
+        <p class="lead">OreSight ranks ground by how likely it is to host copper, using only satellite data.
+          It finds the surface signs that copper-bearing fluids leave behind and the structures those fluids used.
+          It does not see copper itself. Every result is a surface-evidence ranking to guide field checks,
+          geophysics and drilling.</p>
+
+        <h2>1. The four alteration minerals</h2>
+        <p>Hot fluids that carry copper change the rocks they pass through. Four signs are mapped:</p>
+        <table>
+          <tr><th>Layer</th><th>What it is</th><th>Satellite and signal</th></tr>
+          <tr><td><b>Muscovite / sericite</b></td><td>White mica (phyllic alteration), usually closest to the ore</td><td>EMIT, Al-OH absorption near 2200 nm</td></tr>
+          <tr><td><b>Chlorite / epidote</b></td><td>Green minerals (propylitic alteration), usually an outer halo</td><td>EMIT, Fe-OH (2250 nm) and Mg-OH (2330 nm) absorptions</td></tr>
+          <tr><td><b>Gossan / iron oxide</b></td><td>Rusty iron staining, the weathered cap of sulphides</td><td>EMIT, Fe³⁺ absorption near 900 nm</td></tr>
+          <tr><td><b>Quartz / silicification</b></td><td>Silica added by the fluids</td><td>ASTER thermal emissivity (90 m)</td></tr>
+        </table>
+        <p>For each EMIT pixel the depth of the absorption and its uncertainty are measured on every usable date.
+          A pixel counts as a detection only when the absorption is clearly larger than its uncertainty.
+          Detections are then spread into smooth zones (a sharp core plus a wider halo) and scaled so that
+          <b>100 % = the strongest 2 % of this area</b>. Percentages are relative within one area.</p>
+
+        <h2>2. Structures (lineaments)</h2>
+        <p>Fluids rise along faults, fractures and shear zones. Straight features are traced from an elevation
+          model: hillshades from 8 sun directions plus valley and ridge axes. Lines shorter than 800 m are dropped.
+          Cliff and plateau edges (<i>scarps</i>) are kept on the map but not used for scoring.
+          Lineaments come from terrain, so <b>buried structures under flat ground can be missed</b>. Aeromagnetic data is
+          the standard tool for those.</p>
+
+        <h2>3. The Copper Prospectivity Index (CPI)</h2>
+        <p class="formula">H = 0.30·muscovite + 0.28·quartz + 0.22·gossan + 0.20·chlorite<br>
+          CPI = 0.70·H + 0.30·exp(−distance to lineament / 250 m)</p>
+        <p>These are the default weights. All of them can be changed under <i>Adjust parameters</i>.
+          CPI is shown 0-100 %, with contours at 28 % (Tier 3), 50 % (Tier 2) and 70 % (Tier 1).</p>
+
+        <h2>4. Prospective zones and field-check locations</h2>
+        <p><b>The result of this method is a region, not a point.</b> The satellite pixels are 60-90 m, each detection is
+          spread over a few hundred metres, and the data describe the surface while the ore is underground. So the method
+          can say "the mineralisation is probably somewhere in this zone", but it cannot say "drill exactly here".</p>
+        <p><b>Prospective zones</b> are the main result: connected ground with CPI at or above the Tier 2 threshold (50 %).
+          A zone is Tier 1 if it reaches 70 % somewhere, otherwise Tier 2. Separate weak anomalies that only reach 28 % are
+          listed as Tier 3 zones. The 28 % contour around a zone is its outer halo. Zones are ranked by tier, then by peak CPI.</p>
+        <p><b>Suggested field-check locations</b> are starting points for field work inside the zones: the highest-CPI
+          cells, kept at least 250 m apart. Their exact position is not significant, and <b>they are not drill collars</b>.
+          Follow-up is staged: Tier 1 → detailed mapping, systematic sampling and ground geophysics; Tier 2 → reconnaissance
+          mapping and sampling; Tier 3 → check during regional traverses. Drilling decisions come only after that work.</p>
+        <p>Validation supports this: at Thanewasna the Tier 1 zone covers 17.5 % of the block and holds 53 % of the known
+          lode area and 6 of the 8 boreholes that intersect a lode, while only 3 of the top 10 point locations lie within
+          100 m of a lode.</p>
+
+        <h2>5. Reading the maps</h2>
+        <ul>
+          <li><b>Hatched grey areas = "Not assessed".</b> EMIT had no usable view of the ground there. This does
+            <b>not</b> mean there is no alteration. In those areas the CPI uses quartz and structure only.</li>
+          <li><b>Contour lines</b> mark the zone boundaries shown in each map's legend.</li>
+          <li>Click a zone or a field-check location on the map for its details. Click a row in <i>Zones</i> to jump to it.</li>
+          <li><b>Reference geochemistry</b> (stream sediment samples) is shown as squares, coloured and sized by the element
+            you choose. Each sample reflects the ground upstream of it, so no surface is drawn between samples, and high
+            values can simply reflect the rock type (basalt is naturally rich in copper). It is not used in the CPI.
+            Where an area has no usable samples, the option says so.</li>
+          <li><b>Reference geophysics</b> (magnetic anomaly, Bouguer gravity) is listed under the map layers where ground
+            stations exist for the area. Diamonds are the measured stations; the coloured surface and contours are
+            interpolated between them. These layers are for viewing and download only: <b>they are not used in the CPI
+            or the zone ranking</b>. The stations are typically about 1 km apart, so they show the regional pattern
+            and cannot confirm or reject a single zone.</li>
+        </ul>
+
+        <h2>6. Using the app</h2>
+        <ol>
+          <li><b>Area:</b> pick an area or upload a polygon (KML, KMZ, GeoJSON). New areas download their data from Google Earth Engine on the first run.</li>
+          <li><b>Method options:</b> ★ marks the settings that tested best. Results already computed open at once.</li>
+          <li><b>Adjust parameters:</b> every hand-chosen number, with its default and an <span class="ibtn-demo">i</span> explanation.
+            Change values and press <i>Run analysis</i>. Only the affected steps are recomputed, and the result is saved
+            and listed so you can compare it with the others.</li>
+          <li><b>Download:</b> choose maps, rasters, contour lines, vectors (Shapefile / GeoJSON / GeoPackage) and tables. You get one zip.</li>
+        </ol>
+
+        <h2>7. Where each number comes from</h2>
+        <table>
+          <tr><td><span class="tag">LIT</span></td><td>Published literature</td></tr>
+          <tr><td><span class="tag">LIB</span></td><td>Spectral library or product documentation</td></tr>
+          <tr><td><span class="tag">EXP</span></td><td>Expert choice with no external source. Most worth reviewing.</td></tr>
+          <tr><td><span class="tag">ASM</span></td><td>Project assumption</td></tr>
+          <tr><td><span class="tag">TEST</span></td><td>Checked against ground truth</td></tr>
+        </table>
+
+        <h2>8. What the validation numbers mean</h2>
+        <p><b>AUC</b> is the chance that a known mineralised spot scores higher than a random non-mineralised one.
+          0.5 = no better than chance, 1.0 = perfect. At Thanewasna the CPI is tested against 30 mapped Cu lodes
+          and 47 boreholes. Kehalpur has no lode or borehole coordinates, so its checks are consistency tests against
+          NGDR explored blocks and the GSI geology map.</p>
+
+        <h2>9. Known limits</h2>
+        <ul>
+          <li><b>The method predicts regions, not exact points.</b> Use the zones to decide where to work, and treat the
+            point locations only as places to start.</li>
+          <li>An Al-OH absorption at 2190-2215 nm is read as white mica, but kaolinite and smectite absorb at similar positions.</li>
+          <li>Iron oxide from satellites cannot separate a true gossan from laterite or ferruginous soil.</li>
+          <li>The weights follow porphyry-style zoning. The deposit type (for example VMS at Kehalpur) may call for different weights.</li>
+          <li>The quartz layer is coarse (90 m) and the silica ratio SI has no verified primary source.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</div>
+
+<template id="admin-template">
+      <div class="admin">
+        <div class="admin-card">
+          <h2>Users</h2>
+          <p class="muted small">Each person signs in with their own user name and password. Passwords are stored scrambled;
+            they cannot be read back, only replaced. Tell users that their activity on this site is recorded.</p>
+          <div class="table-wrap"><table id="users-table"></table></div>
+          <form id="user-form" class="user-form">
+            <input type="text" id="new-user" placeholder="user name" autocomplete="off" required>
+            <input type="password" id="new-pass" placeholder="password (8+ characters)" autocomplete="new-password" required>
+            <input type="text" id="new-note" placeholder="note, e.g. name / organisation">
+            <button class="btn primary" type="submit">Add or replace user</button>
+          </form>
+          <div id="user-error" class="error"></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-head">
+            <h2>Activity log</h2>
+            <select id="log-user"><option value="">All users</option></select>
+            <select id="log-action"><option value="">All actions</option></select>
+            <button class="btn ghost" id="log-refresh" type="button">Refresh</button>
+            <a class="btn ghost" href="/api/admin/log.csv" download>Download CSV</a>
+          </div>
+          <div class="table-wrap"><table id="log-table"></table></div>
+        </div>
+      </div>
+    </template>
+
+<dialog id="new-area">
+  <form method="dialog" id="new-area-form">
+    <h2>Upload a new area</h2>
+    <p class="muted small">A polygon as KML, KMZ or GeoJSON. Satellite data are fetched from Google Earth Engine when you run the analysis
+      (a 100 km² area takes roughly 20–40 minutes the first time).</p>
+    <label>File <input type="file" id="area-file" accept=".kml,.kmz,.geojson,.json" required></label>
+    <label>Name <input type="text" id="area-name" placeholder="e.g. betul_north" maxlength="40"></label>
+    <div id="area-error" class="error"></div>
+    <div class="dialog-actions">
+      <button type="button" class="btn ghost" id="area-cancel">Cancel</button>
+      <button type="submit" class="btn primary" id="area-upload">Upload</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="info" class="info-dialog">
+  <div class="info-head"><h2 id="info-title"></h2><button class="btn ghost" id="info-close" aria-label="Close">✕</button></div>
+  <div id="info-body"></div>
+</dialog>
+
+<dialog id="lightbox"><img id="lightbox-img" alt=""><button class="btn ghost" id="lightbox-close">Close</button></dialog>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

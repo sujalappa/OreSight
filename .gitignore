@@ -1,0 +1,28 @@
+# --- never publish: secrets
+deploy/huggingface/APP_PASSWORD.txt
+*.env
+.env
+*service-account*.json
+animated-sign-*.json
+*.pem
+*.key
+
+# --- never publish: data and results (large, and include confidential exploration data)
+data/
+outputs/
+deliverables/
+_admin/
+
+# --- kept out for now
+legacy_pipeline/
+# internal documents not yet updated for release
+geoscan/METHODOLOGY.md
+geoscan/README.md
+geoscan/review/
+
+# --- build and cache files
+__pycache__/
+*.pyc
+.pytest_cache/
+.cache/
+*.log

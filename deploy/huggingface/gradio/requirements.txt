@@ -1,0 +1,20 @@
+# pinned to the versions the method was developed and validated with
+spaces
+numpy==2.3.*
+scipy==1.16.*
+pandas==2.3.*
+geopandas==1.1.*
+shapely==2.1.*
+pyproj==3.7.*
+rasterio==1.4.*
+pyogrio==0.13.*
+affine==2.4.*
+netCDF4==1.7.*
+scikit-image==0.26.*
+matplotlib==3.10.*
+pillow==11.3.*
+pyyaml==6.0.*
+earthengine-api==1.7.*
+python-multipart==0.0.*
+opencv-python-headless==4.13.*
+huggingface_hub>=0.25
