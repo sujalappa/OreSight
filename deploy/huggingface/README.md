@@ -6,6 +6,7 @@ colorTo: red
 sdk: docker
 app_port: 7860
 pinned: false
+short_description: Copper prospectivity mapping from satellite data
 ---
 
 # OreSight
