@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import io
 import json
+import os
 import shutil
 from pathlib import Path
 
@@ -22,6 +23,19 @@ from .jobs import JobManager
 STATIC = Path(__file__).parent / "static"
 MAX_AREA_KM2 = 1000.0
 app = FastAPI(title="OreSight")
+
+
+def landing_page() -> HTMLResponse:
+    """Public welcome page shown to visitors who are not signed in.
+
+    It explains what the app is and offers a pre-written access-request email to the contact set in
+    GEOSCAN_CONTACT_EMAIL / GEOSCAN_CONTACT_NAME. Without a contact email the request box is hidden.
+    """
+    import html as _html
+    page = (STATIC / "landing.html").read_text(encoding="utf-8")
+    email = _html.escape(os.environ.get("GEOSCAN_CONTACT_EMAIL", "").strip(), quote=True)
+    name = _html.escape(os.environ.get("GEOSCAN_CONTACT_NAME", "").strip() or "the administrator", quote=True)
+    return HTMLResponse(page.replace("{{EMAIL}}", email).replace("{{NAME}}", name), headers={"Cache-Control": "no-cache"})
 
 
 @app.middleware("http")
@@ -47,6 +61,8 @@ async def login_gate(request: Request, call_next):
         except Exception:
             user = None
     if user is None:
+        if request.url.path == "/" and request.method in ("GET", "HEAD"):
+            return landing_page()            # public welcome page: what the app is, and how to request access
         return Response("Login required", status_code=401, headers={"WWW-Authenticate": 'Basic realm="OreSight"'})
     request.state.user = user
     ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "")).split(",")[0].strip()
@@ -81,6 +97,12 @@ def _safe(base: Path, rel: str) -> Path:
     if base.resolve() not in p.parents or not p.is_file():
         raise HTTPException(404, "file not found")
     return p
+
+
+@app.get("/app", response_class=HTMLResponse)
+def app_page():
+    """The app itself. Unlike "/", this address always asks for a login, so the welcome page can link to it."""
+    return index()
 
 
 @app.get("/", response_class=HTMLResponse)

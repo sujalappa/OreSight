@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OreSight</title>
+<style>
+  :root { --bg: #f4f2ee; --panel: #fff; --ink: #1f2328; --muted: #6b6f76; --line: #e2ded6; --accent: #b5532a; --dark: #23201c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; line-height: 1.5; }
+  header { background: var(--dark); color: #f4f2ee; padding: 14px 22px; font-weight: 650; font-size: 18px; }
+  header span { color: #e08a5b; margin-right: 6px; }
+  main { max-width: 760px; margin: 0 auto; padding: 36px 20px 60px; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 10px; }
+  .lead { font-size: 17px; color: #3b3f45; margin: 0 0 22px; }
+  ul.points { padding-left: 20px; margin: 0 0 26px; }
+  ul.points li { margin: 6px 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; margin-bottom: 18px;
+          box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 6px 18px rgba(0,0,0,.05); }
+  .card h2 { margin: 0 0 6px; font-size: 19px; }
+  .card p { margin: 0 0 14px; color: #3b3f45; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+  input { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
+  .btn { display: inline-block; border-radius: 8px; padding: 10px 16px; font: inherit; font-size: 15px; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  .btn.ghost:hover { background: #f6e6dc; }
+  .small { font-size: 13px; color: var(--muted); }
+  .small a { color: var(--accent); }
+  code { background: #f3efe8; border-radius: 5px; padding: 1px 6px; font-size: 13px; user-select: all; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header><span>◆</span> OreSight</header>
+<main>
+  <h1>Copper prospectivity mapping from satellite data</h1>
+  <p class="lead">OreSight maps the surface alteration that copper-bearing fluids leave behind, traces the structures
+    those fluids may have used, and ranks prospective zones for field follow-up.</p>
+  <ul class="points">
+    <li>Alteration minerals (muscovite, chlorite, gossan, quartz) from NASA EMIT and ASTER imagery</li>
+    <li>Lineaments from a 30 m elevation model, combined into a Copper Prospectivity Index</li>
+    <li>Ranked zones on an interactive map, with adjustable parameters and downloads for GIS</li>
+  </ul>
+
+  <div class="card" id="request-card">
+    <h2>Request access</h2>
+    <p>The app holds exploration data, so access is by invitation. Send a request to <b>{{NAME}}</b> and you will
+      receive a user name and password.</p>
+    <div class="row">
+      <div><label for="who">Your name</label><input id="who" type="text" autocomplete="name" placeholder="e.g. Priya Sharma"></div>
+      <div><label for="org">Organisation or role</label><input id="org" type="text" autocomplete="organization" placeholder="e.g. Geologist, ABC Minerals"></div>
+    </div>
+    <div class="actions">
+      <a class="btn primary" id="gmail" href="#" target="_blank" rel="noopener">Request access with Gmail</a>
+      <a class="btn ghost" id="mailto" href="#">Use another mail app</a>
+    </div>
+    <p class="small" style="margin:12px 0 0">The email opens already addressed and written; you only need to press Send.
+      Or write to <code>{{EMAIL}}</code>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Already have an account?</h2>
+    <p>Sign in with the user name and password you were given.</p>
+    <a class="btn ghost" href="/app" target="_top">Sign in</a>
+  </div>
+
+  <p class="small">Source code: <a href="https://github.com/sujalappa/OreSight" target="_blank" rel="noopener">github.com/sujalappa/OreSight</a></p>
+</main>
+<script>
+  "use strict";
+  const EMAIL = "{{EMAIL}}", NAME = "{{NAME}}";
+  const who = document.getElementById("who"), org = document.getElementById("org");
+  function links() {
+    const n = who.value.trim(), o = org.value.trim();
+    const subject = "OreSight access request" + (n ? " - " + n : "");
+    const body = `Hello ${NAME.split(" ")[0] || ""},\n\nI would like access to OreSight.\n\n` +
+      `Name: ${n}\nOrganisation / role: ${o}\nReason for access: \n\nThank you.`;
+    const e = encodeURIComponent;
+    document.getElementById("gmail").href = `https://mail.google.com/mail/?view=cm&fs=1&to=${e(EMAIL)}&su=${e(subject)}&body=${e(body)}`;
+    document.getElementById("mailto").href = `mailto:${EMAIL}?subject=${e(subject)}&body=${e(body)}`;
+  }
+  who.addEventListener("input", links);
+  org.addEventListener("input", links);
+  links();
+  if (!EMAIL) document.getElementById("request-card").hidden = true;
+</script>
+</body>
+</html>

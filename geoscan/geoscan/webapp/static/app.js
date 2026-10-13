@@ -844,7 +844,7 @@ async function signOut(ev) {
     x.send();
   });
   document.body.innerHTML = `<div class="signed-out"><h1>You are signed out</h1>
-    <p>Close this tab, or <a href="/">sign in again</a>.</p>
+    <p>Close this tab, or <a href="/app">sign in again</a>.</p>
     <p class="muted small">If the app opens without asking for a password, close all browser windows to finish signing out.</p></div>`;
 }
 

@@ -25,3 +25,4 @@ Configuration (Space settings → Variables and secrets):
 | `HF_TOKEN` | secret | Token with write access to the storage dataset |
 | `GEOSCAN_STORE_REPO` | variable | Private dataset that holds data and results |
 | `GEE_SERVICE_ACCOUNT_KEY` | secret | JSON key of an Earth Engine service account |
+| `GEOSCAN_CONTACT_EMAIL`, `GEOSCAN_CONTACT_NAME` | variables | Who visitors write to for access; shown on the public welcome page |
