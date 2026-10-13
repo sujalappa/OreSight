@@ -53,6 +53,21 @@ VECTOR_LABELS = {"prospective_zones.geojson": "Prospective zones, ranked (polygo
 FORMATS = {"shp": "Shapefile", "geojson": "GeoJSON", "gpkg": "GeoPackage"}
 
 
+CREDITS = [
+    "EMIT L2A reflectance and L2B mineral identification: NASA EMIT mission, NASA Jet Propulsion Laboratory; "
+    "distributed by NASA LP DAAC (doi:10.5067/EMIT/EMITL2ARFL.001, doi:10.5067/EMIT/EMITL2BMIN.001).",
+    "ASTER Global Emissivity Dataset AG100 v003: NASA Jet Propulsion Laboratory; distributed by NASA LP DAAC "
+    "(doi:10.5067/Community/ASTER_GED/AG100.003).",
+    "Elevation models: ALOS World 3D 30 m (c) JAXA; SRTM 1 arc-second, NASA / USGS (doi:10.5067/MEaSUREs/SRTM/SRTMGL1.003); "
+    "Copernicus DEM GLO-30 (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS "
+    "by the European Union and ESA, all rights reserved (doi:10.5270/ESA-c5d3d65). The one used is named under 'Method options'.",
+    "Reference gravity, magnetic and stream sediment data: Geological Survey of India, Ministry of Mines, Government of India (Bhukosh portal).",
+    "Validation data: National Geoscience Data Repository (NGDR), Geological Survey of India and Mineral Exploration and "
+    "Consultancy Limited (MECL).",
+    "Satellite data accessed through Google Earth Engine.",
+]
+
+
 def items(run: catalog.Run) -> list[dict]:
     d = run.path
     out = []
@@ -189,5 +204,6 @@ def build_zip(run: catalog.Run, selected: list[str], fmts: list[str]) -> bytes:
             else:
                 continue
             readme.append(f"  - {it}")
+        readme += ["", "Data sources and credits (keep these with any map or file you pass on):"] + [f"  - {c}" for c in CREDITS]
         z.writestr("README.txt", ("﻿" + "\r\n".join(readme)).encode("utf-8"))   # BOM so Notepad shows UTF-8
     return buf.getvalue()

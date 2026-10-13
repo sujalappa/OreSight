@@ -56,12 +56,21 @@ Raw downloads are cached in `data/<area>/` and results are written to `outputs/<
 | `geoscan/tests/` | Unit tests (`pytest`) |
 | `deploy/huggingface/` | Deployment to a Hugging Face Space |
 
-## Data sources
+## Data sources and credits
 
-- NASA EMIT L2A surface reflectance and L2B mineral identification
-- ASTER Global Emissivity Dataset
-- ALOS AW3D30, SRTM and Copernicus GLO-30 elevation models
-- Optional reference layers from the Geological Survey of India (Bhukosh): ground gravity and magnetic stations, stream-sediment geochemistry
+OreSight is built on data from these organisations. The data remain the property of their providers and are used under their terms.
+
+| Data | Used for | Provider and credit |
+|---|---|---|
+| EMIT L2A surface reflectance and L2B mineral identification | Muscovite, chlorite and gossan layers | NASA EMIT mission, NASA Jet Propulsion Laboratory; distributed by NASA LP DAAC. [doi:10.5067/EMIT/EMITL2ARFL.001](https://doi.org/10.5067/EMIT/EMITL2ARFL.001), [doi:10.5067/EMIT/EMITL2BMIN.001](https://doi.org/10.5067/EMIT/EMITL2BMIN.001) |
+| ASTER Global Emissivity Dataset (AG100 v003) | Quartz layer | NASA Jet Propulsion Laboratory; distributed by NASA LP DAAC. [doi:10.5067/Community/ASTER_GED/AG100.003](https://doi.org/10.5067/Community/ASTER_GED/AG100.003) |
+| ALOS World 3D 30 m (AW3D30) | Lineaments (default) | © Japan Aerospace Exploration Agency (JAXA) |
+| SRTM 1 arc-second (SRTMGL1 v003) | Lineaments (optional) | NASA / USGS; distributed by NASA LP DAAC. [doi:10.5067/MEaSUREs/SRTM/SRTMGL1.003](https://doi.org/10.5067/MEaSUREs/SRTM/SRTMGL1.003) |
+| Copernicus DEM GLO-30 | Lineaments (optional) | © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved. [doi:10.5270/ESA-c5d3d65](https://doi.org/10.5270/ESA-c5d3d65) |
+| Ground gravity and magnetic stations, stream sediment geochemistry, geomorphology, mapped lineaments | Reference layers and checks | Geological Survey of India (GSI), Ministry of Mines, Government of India; Bhukosh portal |
+| Exploration report index, geological maps, lode and borehole data | Validation | National Geoscience Data Repository (NGDR), Geological Survey of India, and Mineral Exploration and Consultancy Limited (MECL) |
+| Satellite data access | Fetching imagery for an area | Google Earth Engine |
+| Base maps | Map background | Esri World Imagery; OpenTopoMap (CC-BY-SA), © OpenStreetMap contributors |
 
 No data is included in this repository. Exploration data used for validation is not public.
 

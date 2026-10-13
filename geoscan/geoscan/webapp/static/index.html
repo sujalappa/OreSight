@@ -129,7 +129,8 @@
     <section class="tab-panel" id="tab-guide">
       <article class="guide">
         <h1>How OreSight works</h1>
-        <p class="lead">OreSight ranks ground by how likely it is to host copper, using only satellite data.
+        <p class="lead">OreSight ranks ground by how likely it is to host copper. The ranking is computed from satellite data;
+          ground geophysics and geochemistry are shown alongside for reference.
           It finds the surface signs that copper-bearing fluids leave behind and the structures those fluids used.
           It does not see copper itself. Every result is a surface-evidence ranking to guide field checks,
           geophysics and drilling.</p>
@@ -227,6 +228,37 @@
           <li>The weights follow porphyry-style zoning. The deposit type (for example VMS at Kehalpur) may call for different weights.</li>
           <li>The quartz layer is coarse (90 m) and the silica ratio SI has no verified primary source.</li>
         </ul>
+
+        <h2>10. Data sources and credits</h2>
+        <p>OreSight is built on data from the organisations below. The data remain the property of their providers and
+          are used under their terms. Maps and files taken from this app that include or derive from these data should
+          carry the same credits.</p>
+        <table>
+          <tr><th>Data</th><th>Used for</th><th>Provider and credit</th></tr>
+          <tr><td>EMIT L2A surface reflectance and L2B mineral identification</td><td>Muscovite, chlorite and gossan layers</td>
+            <td>NASA Earth Surface Mineral Dust Source Investigation (EMIT), NASA Jet Propulsion Laboratory; distributed by NASA LP DAAC.
+              doi:10.5067/EMIT/EMITL2ARFL.001, doi:10.5067/EMIT/EMITL2BMIN.001</td></tr>
+          <tr><td>ASTER Global Emissivity Dataset (AG100 v003)</td><td>Quartz layer</td>
+            <td>NASA Jet Propulsion Laboratory; distributed by NASA LP DAAC. doi:10.5067/Community/ASTER_GED/AG100.003</td></tr>
+          <tr><td>ALOS World 3D 30 m (AW3D30)</td><td>Lineaments (default elevation model)</td><td>© Japan Aerospace Exploration Agency (JAXA)</td></tr>
+          <tr><td>SRTM 1 arc-second (SRTMGL1 v003)</td><td>Lineaments (optional elevation model)</td>
+            <td>NASA / USGS; distributed by NASA LP DAAC. doi:10.5067/MEaSUREs/SRTM/SRTMGL1.003</td></tr>
+          <tr><td>Copernicus DEM GLO-30</td><td>Lineaments (optional elevation model)</td>
+            <td>© DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA;
+              all rights reserved. doi:10.5270/ESA-c5d3d65</td></tr>
+          <tr><td>Ground gravity and magnetic stations, stream sediment geochemistry, geomorphology, mapped lineaments</td>
+            <td>Reference layers and checks</td>
+            <td>Geological Survey of India (GSI), Ministry of Mines, Government of India; Bhukosh portal</td></tr>
+          <tr><td>Exploration report index and block outlines</td><td>Validation</td>
+            <td>National Geoscience Data Repository (NGDR), Ministry of Mines, Government of India</td></tr>
+          <tr><td>Geological map and structural readings, report CRO-19966 (1987)</td><td>Validation (Kehalpur)</td>
+            <td>Geological Survey of India, obtained through NGDR</td></tr>
+          <tr><td>Lode outlines, borehole data and geological map, report MCL00097</td><td>Validation (Thanewasna)</td>
+            <td>Mineral Exploration and Consultancy Limited (MECL), obtained through NGDR</td></tr>
+          <tr><td>Satellite data access and processing</td><td>Fetching imagery for an area</td><td>Google Earth Engine</td></tr>
+          <tr><td>Base maps</td><td>Map background</td>
+            <td>Esri World Imagery (Esri, Maxar, Earthstar Geographics); OpenTopoMap (CC-BY-SA), © OpenStreetMap contributors</td></tr>
+        </table>
       </article>
     </section>
   </main>
