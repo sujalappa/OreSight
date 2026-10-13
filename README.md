@@ -1,6 +1,6 @@
 # OreSight
 
-Copper prospectivity from satellite data. OreSight maps the surface alteration that copper-bearing fluids leave behind, traces the structures those fluids may have used, and ranks **prospective zones** for field follow-up.
+Copper prospectivity mapping. OreSight maps the surface alteration that copper-bearing fluids leave behind, traces the structures those fluids may have used, and ranks **prospective zones** for field follow-up.
 
 It predicts regions, not drill points. The results are a surface-evidence ranking to guide mapping, sampling and geophysics.
 

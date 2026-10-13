@@ -8,12 +8,12 @@ sdk_version: 6.30.0
 python_version: "3.12"
 app_file: app.py
 pinned: false
-short_description: Copper prospectivity mapping from satellite data
+short_description: Copper prospectivity mapping
 ---
 
 # OreSight
 
-Copper prospectivity from satellite data: alteration mapping (EMIT, ASTER), lineaments, CPI, ranked prospective zones and suggested field-check locations.
+Copper prospectivity mapping: alteration mapping (EMIT, ASTER), lineaments, CPI, ranked prospective zones and suggested field-check locations.
 
 The app asks for a user name and password. New analyses are saved to a private dataset, so they survive restarts.
 
