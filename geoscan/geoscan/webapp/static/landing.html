@@ -58,7 +58,7 @@
   <div class="card">
     <h2>Already have an account?</h2>
     <p>Sign in with the user name and password you were given.</p>
-    <a class="btn ghost" href="/app" target="_top">Sign in</a>
+    <a class="btn ghost" id="signin" href="/app">Sign in</a>
   </div>
 </main>
 <script>
@@ -77,6 +77,19 @@
   who.addEventListener("input", links);
   org.addEventListener("input", links);
   links();
+
+  // Inside a frame (e.g. the Hugging Face Space page) the page may not navigate the whole window, and a
+  // login box would be blocked anyway. There, open the app and the mail link in a new tab instead.
+  const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+  if (framed) {
+    for (const id of ["signin", "mailto"]) {
+      document.getElementById(id).addEventListener("click", (ev) => {
+        ev.preventDefault();
+        const href = ev.currentTarget.getAttribute("href");
+        window.open(href.startsWith("/") ? location.origin + href : href, "_blank", "noopener");
+      });
+    }
+  }
   if (!EMAIL) document.getElementById("request-card").hidden = true;
 </script>
 </body>
